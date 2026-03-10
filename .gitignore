@@ -1,0 +1,12 @@
+*.env
+node_modules
+pycache
+.DS_Store
+.vscode
+.idea
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.mypy_cache
