@@ -3,11 +3,7 @@ from game_engine import *
 
 MAX_DEPTH = 3
 
-
-# --------------------------------------------------
 # AI move
-# --------------------------------------------------
-
 def ai_move(board, reserves, ai_player):
 
     best_score = -math.inf
@@ -26,7 +22,7 @@ def ai_move(board, reserves, ai_player):
             score = minimax(
                 new_board, new_reserves,
                 MAX_DEPTH - 1,
-                False,          # prossima mossa è del minimizzatore (umano)
+                False,    
                 ai_player,
                 -math.inf, math.inf
             )
@@ -39,9 +35,7 @@ def ai_move(board, reserves, ai_player):
     return best_move, best_ptype
 
 
-# --------------------------------------------------
-# Minimax con alpha-beta pruning
-# --------------------------------------------------
+# Minimax with alpha-beta pruning
 
 def minimax(board, reserves, depth, maximizing_player, ai_player, alpha, beta):
 
@@ -49,9 +43,9 @@ def minimax(board, reserves, depth, maximizing_player, ai_player, alpha, beta):
     winner   = check_winner(board, reserves)
 
     if winner == ai_player:
-        return 10000 + depth   # vinci prima = meglio
+        return 10000 + depth  
     if winner == opponent:
-        return -10000 - depth  # perdi prima = peggio
+        return -10000 - depth 
 
     if depth == 0:
         return evaluate(board, reserves, ai_player)
@@ -117,9 +111,7 @@ def minimax(board, reserves, depth, maximizing_player, ai_player, alpha, beta):
         return min_eval
 
 
-# --------------------------------------------------
-# Funzione di valutazione
-# --------------------------------------------------
+# evaluation func
 
 def evaluate(board, reserves, ai_player):
 
@@ -130,28 +122,20 @@ def evaluate(board, reserves, ai_player):
 
     score = 0
 
-    # Gatti in riserva (pronti da piazzare)
     score += reserves[ai_player]['c'] * 15
     score -= reserves[opponent]['c']  * 15
 
-    # Gatti sul tabellone (molto preziosi)
     score += ai_cats * 20
     score -= op_cats * 20
 
-    # Gattini sul tabellone
     score += ai_kittens * 5
     score -= op_kittens * 5
 
-    # Potenziale allineamento gatti (2 gatti con terza cella libera)
     score += count_cat_threats(board, ai_player) * 30
     score -= count_cat_threats(board, opponent)  * 30
 
     return score
 
-
-# --------------------------------------------------
-# Conteggio pezzi
-# --------------------------------------------------
 
 def count_pieces(board, player):
     kittens = 0
@@ -163,12 +147,6 @@ def count_pieces(board, player):
             elif piece == player + 'c': cats    += 1
     return kittens, cats
 
-
-# --------------------------------------------------
-# Euristica allineamento gatti
-# Conta tutte le coppie di gatti con una terza cella libera in linea
-# Patterns: [cat, cat, .], [cat, ., cat], [., cat, cat]
-# --------------------------------------------------
 
 def count_cat_threats(board, player):
     count      = 0
@@ -184,7 +162,6 @@ def count_cat_threats(board, player):
                 cells = [board[rr, cc] for rr, cc in coords]
                 n_cats  = cells.count(cat)
                 n_empty = cells.count('.')
-                # Due gatti e una cella libera nella stessa linea = minaccia
                 if n_cats == 2 and n_empty == 1:
                     count += 1
 
