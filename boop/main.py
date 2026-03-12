@@ -6,7 +6,7 @@ from game_engine import (
 from ai_player import ai_move
 
 
-# ── Board display ─────────────────────────────────────────────
+# Board display 
 
 def print_board(board, reserves):
     rownames = ['A', 'B', 'C', 'D', 'E', 'F']
@@ -22,10 +22,9 @@ def print_board(board, reserves):
     print()
 
 
-# ── Human move ────────────────────────────────────────────────
+# Human move 
 
 def human_move(board, reserves, player):
-    """Returns (row, col), ptype."""
 
     available = []
     if reserves[player]['k'] > 0:
@@ -71,7 +70,7 @@ def human_move(board, reserves, player):
         return (row, col), ptype
 
 
-# ── Main loop ─────────────────────────────────────────────────
+#  Main loop 
 
 def main():
     board, reserves = initiate_board()
