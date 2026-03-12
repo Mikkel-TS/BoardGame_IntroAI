@@ -3,7 +3,7 @@ import numpy as np
 BOARD_SIZE = 6
 
 
-# ── Board creation ────────────────────────────────────────────
+#Board creation 
 
 def initiate_board():
     board = np.full((BOARD_SIZE, BOARD_SIZE), '.', dtype=object)
@@ -22,7 +22,7 @@ def copy_reserves(reserves):
     }
 
 
-# ── Utilities ─────────────────────────────────────────────────
+#Utilities 
 
 def switch_turn(player):
     return 'b' if player == 'r' else 'r'
@@ -40,7 +40,7 @@ def piece_type(piece):
     return None if piece == '.' else piece[1]
 
 
-# ── Legal moves ───────────────────────────────────────────────
+# Legal moves
 
 def get_legal_moves(board):
     moves = []
@@ -51,7 +51,7 @@ def get_legal_moves(board):
     return moves
 
 
-# ── Push mechanics ────────────────────────────────────────────
+#  Push mechanics
 
 _DIRECTIONS = [
     (-1,  0), (1,  0), (0, -1), (0,  1),
@@ -60,15 +60,6 @@ _DIRECTIONS = [
 
 
 def _push_tiles(board, reserves, r, c):
-    """
-    Spinge tutti i pezzi adiacenti a (r,c) di una casella.
-
-    Regole:
-    - I gattini non possono spingere i gatti.
-    - Se la destinazione è occupata, la spinta è bloccata
-      (eccezione "due pezzi in linea").
-    - I pezzi spinti fuori tornano alla reserve del proprietario.
-    """
     pusher_t = piece_type(board[r, c])
 
     for dr, dc in _DIRECTIONS:
@@ -84,31 +75,26 @@ def _push_tiles(board, reserves, r, c):
         target_owner = piece_owner(target)
         target_t     = piece_type(target)
 
-        # I gattini non possono spingere i gatti
         if pusher_t == 'k' and target_t == 'c':
             continue
 
         tr, tc = nr + dr, nc + dc
 
-        # Eccezione "due pezzi in linea": destinazione occupata -> bloccato
         if inside_board(tr, tc) and board[tr, tc] != '.':
             continue
 
-        # Spinto fuori dal bordo -> torna alla reserve
         if not inside_board(tr, tc):
             reserves[target_owner][target_t] += 1
             board[nr, nc] = '.'
             continue
 
-        # Spinta normale
         board[tr, tc] = target
         board[nr, nc] = '.'
 
 
-# ── Promotion ─────────────────────────────────────────────────
+#  Promotion 
 
 def _find_kitten_lines(board, player):
-    """Restituisce tutti i gruppi di 3 gattini allineati del giocatore."""
     line_dirs = [(0, 1), (1, 0), (1, 1), (-1, 1)]
     found = []
     for r in range(BOARD_SIZE):
@@ -124,12 +110,7 @@ def _find_kitten_lines(board, player):
 
 
 def _promote_kittens(board, reserves):
-    """
-    Rimuove ogni gruppo di 3 gattini allineati.
-    Ogni gattino rimosso diventa un gatto nella reserve del proprietario.
-    Ripete finché non ci sono più linee (possono formarsi più linee
-    simultaneamente dopo una spinta).
-    """
+
     changed = True
     while changed:
         changed = False
@@ -144,14 +125,9 @@ def _promote_kittens(board, reserves):
             changed = True
 
 
-# ── Apply move ────────────────────────────────────────────────
+#  Apply move 
 
 def apply_move(board, reserves, move, player, ptype=None):
-    """
-    Piazza un pezzo del giocatore in move=(row, col).
-    ptype: 'k' o 'c'. Se omesso, preferisce i gatti se disponibili.
-    Restituisce (new_board, new_reserves) senza modificare gli originali.
-    """
     r, c = move
 
     if ptype is None:
@@ -174,10 +150,7 @@ def apply_move(board, reserves, move, player, ptype=None):
     return new_board, new_reserves
 
 
-# ── Win checking ──────────────────────────────────────────────
-
 def check_winner(board, reserves):
-    """Restituisce 'r', 'b', o None."""
     for player in ('r', 'b'):
         if _three_cats_in_row(board, player):
             return player
